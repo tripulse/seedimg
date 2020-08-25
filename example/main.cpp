@@ -56,14 +56,14 @@ int main() {
 //          >> inversion_filter()  // [inverted]
 //          >> a;
 
-      lazy_filterchain()
-          .push_end(seedimg::filters::h_mirror)
-          .push_end(seedimg::filters::rotate_hue, 180)
-          .push_end(seedimg::filters::invert)
-          .push_end(seedimg::filters::brightness, 40)
-          .evaluate(a);
+      // lazy_filterchain()
+      //     .push_end(seedimg::filters::h_mirror)
+      //     .push_end(seedimg::filters::rotate_hue, 180)
+      //     .push_end(seedimg::filters::invert)
+      //     .push_end(seedimg::filters::brightness, 40)
+      //     .evaluate(a);
 
-      seedimg::save("biol.jpg", a);
+      // seedimg::save("biol.jpg", a);
     } else {
       std::cerr << "failed" << std::endl;
     }
