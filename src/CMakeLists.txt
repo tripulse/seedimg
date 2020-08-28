@@ -1,4 +1,4 @@
-#[[ 
+﻿#[[ 
 seedimg - module based image manipulation library written in modern C++ 
 Copyright (C) 2020 telugu-boy 
  
@@ -31,3 +31,5 @@ add_subdirectory(seedimg-filters)
 # automatic detection of image types:
 add_subdirectory(seedimg-autodetect)
 
+# experimental lazily-evaluated filterchain
+add_subdirectory(seedimg-filterchain)
