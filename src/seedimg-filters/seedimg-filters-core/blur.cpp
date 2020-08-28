@@ -16,9 +16,9 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************************************************************/
-#include <seedimg-filters/seedimg-filters-core.hpp>
 #include <cmath>
 #include <cstdint>
+#include <seedimg-filters/seedimg-filters-core.hpp>
 // #include <immintrin.h>
 #include <algorithm>
 #include <memory>
@@ -194,8 +194,7 @@ void h_blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it) {
     return;
   blur_level =
       clamped_blur_level(blur_level, inp_img->width(), inp_img->height());
-  auto res_img =
-      std::make_unique<seedimg::img>(inp_img->width(), inp_img->height());
+  auto res_img = seedimg::make(inp_img->width(), inp_img->height());
   for (std::uint8_t i = 0; i < it; ++i) {
     if (i % 2 == 0) {
       horizontal_blur_single_i(inp_img, res_img, blur_level);
@@ -203,16 +202,15 @@ void h_blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it) {
       horizontal_blur_single_i(res_img, inp_img, blur_level);
     }
   }
-  if (it % 2 == 0)
-    inp_img.reset(res_img.release());
+  if (it % 2 == 0 || it == 1)
+    inp_img.reset(res_img.get());
 }
 void v_blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it) {
   if (blur_level == 0)
     return;
   blur_level =
       clamped_blur_level(blur_level, inp_img->width(), inp_img->height());
-  auto res_img =
-      std::make_unique<seedimg::img>(inp_img->width(), inp_img->height());
+  auto res_img = seedimg::make(inp_img->width(), inp_img->height());
   for (std::uint8_t i = 0; i < it; ++i) {
     if (i % 2 == 0) {
       vertical_blur_single_i(inp_img, res_img, blur_level);
@@ -220,8 +218,8 @@ void v_blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it) {
       vertical_blur_single_i(res_img, inp_img, blur_level);
     }
   }
-  if (it % 2 == 0)
-    inp_img.reset(res_img.release());
+  if (it % 2 == 0 || it == 1)
+    inp_img.reset(res_img.get());
 }
 void blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it) {
   if (blur_level == 0)
@@ -229,7 +227,7 @@ void blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it) {
   blur_level =
       clamped_blur_level(blur_level, inp_img->width(), inp_img->height());
   auto res_img =
-      std::make_unique<seedimg::img>(inp_img->width(), inp_img->height());
+      std::make_shared<seedimg::img>(inp_img->width(), inp_img->height());
   for (std::uint8_t i = 0; i < it; ++i) {
     box_blur_single(inp_img, res_img, blur_level);
   }
