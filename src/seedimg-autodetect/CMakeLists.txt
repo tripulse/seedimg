@@ -24,6 +24,7 @@ target_link_libraries(seedimg-autodetect
     seedimg-webp
     seedimg-farbfeld
     seedimg-irdump
+    seedimg-gif
 )
 
 target_include_directories(seedimg-autodetect PUBLIC

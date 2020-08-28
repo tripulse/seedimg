@@ -1,4 +1,4 @@
-#[[
+﻿#[[
 seedimg - module based image manipulation library written in modern C++
 Copyright (C) 2020 tripulse, telugu-boy
 
@@ -22,3 +22,4 @@ add_subdirectory(seedimg-png)
 add_subdirectory(seedimg-webp)
 add_subdirectory(seedimg-farbfeld)
 add_subdirectory(seedimg-irdump)
+add_subdirectory(seedimg-gif)

@@ -23,6 +23,7 @@
 #include <seedimg-formats/seedimg-jpeg.hpp>
 #include <seedimg-formats/seedimg-png.hpp>
 #include <seedimg-formats/seedimg-webp.hpp>
+#include <seedimg-formats/seedimg-gif.hpp>
 #include <seedimg.hpp>
 
 #include "seedimg-autodetect.hpp"
@@ -38,6 +39,8 @@ enum img_type match_ext(const std::string &ext) noexcept {
     return img_type::farbfeld;
   if (ext == "sir")
     return img_type::irdump;
+  if (ext == "gif")
+    return img_type::gif;
   return img_type::unknown;
 }
 
@@ -52,6 +55,8 @@ std::optional<enum img_type> imgtype(const std::string &filename) noexcept {
     return img_type::webp;
   if (seedimg::modules::farbfeld::check(filename))
     return img_type::farbfeld;
+  if (seedimg::modules::gif::check(filename))
+    return img_type::gif;
   return img_type::unknown;
 }
 
@@ -69,6 +74,8 @@ simg load(const std::string &filename) {
     return seedimg::modules::webp::from(filename);
   case img_type::farbfeld:
     return seedimg::modules::farbfeld::from(filename);
+  case img_type::gif:
+    return seedimg::modules::gif::from(filename);
   default:
     return nullptr;
   }
@@ -87,6 +94,8 @@ bool save(const std::string &filename, const simg &image) {
     return seedimg::modules::farbfeld::to(filename, image);
   case img_type::irdump:
     return seedimg::modules::irdump::to(filename, image);
+  case img_type::gif:
+    return seedimg::modules::gif::to(filename, image);
   default:
     return false;
   }

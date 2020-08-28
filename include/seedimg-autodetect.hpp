@@ -25,7 +25,7 @@
 
 #include <seedimg.hpp>
 
-enum class img_type { unknown = 0, png, jpeg, webp, farbfeld, irdump };
+enum class img_type { unknown = 0, png, jpeg, webp, farbfeld, irdump, gif };
 
 enum img_type match_ext(const std::string &ext) noexcept;
 
