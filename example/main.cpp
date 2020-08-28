@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
 seedimg - module based image manipulation library written in modern
             C++ Copyright(C) 2020 telugu-boy
 
@@ -20,15 +20,14 @@ seedimg - module based image manipulation library written in modern
 #include <iostream>
 
 #include <seedimg-autodetect.hpp>
-#include <seedimg-filters/seedimg-filters-core.hpp>
-#include <seedimg-filters/seedimg-filters-ocl.hpp>
+#include <seedimg-filterchain.hpp>
 
 int main() {
   using namespace seedimg::filters;
   std::cout << "Current path is " << std::filesystem::current_path()
             << std::endl;
   {
-    ocl::init_ocl_singleton(1, 0);
+    //ocl::init_ocl_singleton(1, 0);
     auto a = seedimg::load("cat.png");
     auto res_img = seedimg::make(a->width(), a->height());
     if (a != nullptr) {
@@ -42,8 +41,8 @@ int main() {
       // 0}});
       // rotate_hue_i(a, 180);
       // h_mirror_i(a);
-      ocl::rotate_hue(a, a, -90);
-      seedimg::save("boil.jpg", a);
+      // ocl::rotate_hue(a, a, -90);
+      seedimg::save("boil.gif", a);
       // bool b = seedimg::modules::jpeg::to("biol.jpg", a, 1);
     } else {
       std::cerr << "failed" << std::endl;
