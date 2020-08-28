@@ -22,6 +22,7 @@ seedimg - module based image manipulation library written in modern
 #include <seedimg-autodetect.hpp>
 #include <seedimg-filters/seedimg-filters-core.hpp>
 // #include <seedimg-filters/seedimg-filters-ocl.hpp>
+#include <seedimg-filterchain.hpp>
 
 int main() {
   using namespace seedimg::filters;
@@ -29,7 +30,7 @@ int main() {
   std::cout << "Current path is " << std::filesystem::current_path()
             << std::endl;
   {
-    // ocl::init_ocl_singleton(1, 0);
+    //ocl::init_ocl_singleton(1, 0);
     auto a = seedimg::load("cat.png");
     // auto res_img = seedimg::make(a->width(), a->height());
     if (a != nullptr) {
