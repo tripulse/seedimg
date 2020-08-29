@@ -30,6 +30,3 @@ add_subdirectory(seedimg-filters)
 
 # automatic detection of image types:
 add_subdirectory(seedimg-autodetect)
-
-# experimental lazily-evaluated filterchain
-add_subdirectory(seedimg-filterchain)

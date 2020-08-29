@@ -1,1 +1,0 @@
-add_library(seedimg-filterchain seedimg-filterchain.cpp) 
