@@ -21,10 +21,11 @@ seedimg - module based image manipulation library written in modern
 
 #include <seedimg-autodetect.hpp>
 #include <seedimg-filters/seedimg-filters-core.hpp>
-#include <seedimg-filters/seedimg-filterchain-ports.hpp>
+#include <seedimg-filters/seedimg-filterchain.hpp>
 
 int main() {
   using namespace seedimg::filters;
+
   std::cout << "Current path is " << std::filesystem::current_path()
             << std::endl;
   {
@@ -43,16 +44,23 @@ int main() {
       // h_mirror_i(a);
       // ocl::rotate_hue_i(a, -90);
       // bool b = seedimg::modules::jpeg::to("biol.jpg", a, 1);
-      inversion_filter()         // [inverted]
-          >> inversion_filter()  // [original]
-          >> inversion_filter()  // [inverted]
-          >> inversion_filter()  // [original]
-          >> inversion_filter()  // [inverted]
-          >> inversion_filter()  // [original]
-          >> inversion_filter()  // [inverted]
-          >> inversion_filter()  // [original]
-          >> inversion_filter()  // [inverted]
-          >> a;
+//      inversion_filter()         // [inverted]
+//          >> inversion_filter()  // [original]
+//          >> inversion_filter()  // [inverted]
+//          >> inversion_filter()  // [original]
+//          >> inversion_filter()  // [inverted]
+//          >> inversion_filter()  // [original]
+//          >> inversion_filter()  // [inverted]
+//          >> inversion_filter()  // [original]
+//          >> inversion_filter()  // [inverted]
+//          >> a;
+
+      lazy_filterchain()
+          .push_end(seedimg::filters::h_mirror)
+          .push_end(seedimg::filters::rotate_hue, 180)
+          .push_end(seedimg::filters::invert)
+          .push_end(seedimg::filters::brightness, 40)
+          .evaluate(a);
 
       seedimg::save("biol.jpg", a);
     } else {
