@@ -21,8 +21,7 @@ seedimg - module based image manipulation library written in modern
 
 #include <seedimg-autodetect.hpp>
 #include <seedimg-filters/seedimg-filters-core.hpp>
-// #include <seedimg-filters/seedimg-filters-ocl.hpp>
-#include <seedimg-filterchain.hpp>
+#include <seedimg-filters/seedimg-filterchain.hpp>
 
 int main() {
   using namespace seedimg::filters;
@@ -34,7 +33,7 @@ int main() {
     auto a = seedimg::load("cat.png");
     // auto res_img = seedimg::make(a->width(), a->height());
     if (a != nullptr) {
-      crop_i(a, {0, 0}, {100, 100});
+      // crop_i(a, {0, 0}, {100, 100});
       // grayscale_i(a, true);
       // invert_i(a);
       // blur_i(a, 10);
@@ -45,7 +44,7 @@ int main() {
       // v_mirror_i(a);
       // h_mirror_i(a);
       // ocl::rotate_hue_i(a, -90);
-      seedimg::save("biol.png", a);
+      // seedimg::save("biol.png", a);
       // bool b = seedimg::modules::jpeg::to("biol.jpg", a, 1);
 //      inversion_filter()         // [inverted]
 //          >> inversion_filter()  // [original]
@@ -58,14 +57,14 @@ int main() {
 //          >> inversion_filter()  // [inverted]
 //          >> a;
 
-      // lazy_filterchain()
-      //     .push_end(seedimg::filters::h_mirror)
-      //     .push_end(seedimg::filters::rotate_hue, 180)
-      //     .push_end(seedimg::filters::invert)
-      //     .push_end(seedimg::filters::brightness, 40)
-      //     .evaluate(a);
+      lazy_filterchain()
+          .push_end(seedimg::filters::h_mirror)
+          .push_end(seedimg::filters::rotate_hue, 180)
+          .push_end(seedimg::filters::invert)
+          .push_end(seedimg::filters::brightness, 40)
+          .evaluate(a);
 
-      // seedimg::save("biol.jpg", a);
+      seedimg::save("biol.jpg", a);
     } else {
       std::cerr << "failed" << std::endl;
     }
