@@ -43,7 +43,7 @@ int main() {
       // rotate_hue_i(a, 180);
       // v_mirror_i(a);
       // ocl::rotate_hue_i(a, -90);
-      seedimg::save("biol.jpg", a);
+      seedimg::save("biol.tiff", a);
       // bool b = seedimg::modules::jpeg::to("biol.jpg", a, 1);
 //      inversion_filter()         // [inverted]
 //          >> inversion_filter()  // [original]
