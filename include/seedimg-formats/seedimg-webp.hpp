@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
     seedimg - module based image manipulation library written in modern
                 C++ Copyright(C) 2020 telugu-boy
 
@@ -29,6 +29,13 @@ bool check(const std::string &filename) noexcept;
 bool to(const std::string &filename, const simg &inp_img,
         float quality = 100.0);
 simg from(const std::string &filename);
+
+/**
+ * @brief Decodes a (possibly) animated WebP file.
+ * @param filename location to read from.
+ * @return an empty array on error/file being empty.
+ */
+anim from_anim(const std::string& filename);
 } // namespace webp
 } // namespace seedimg::modules
 

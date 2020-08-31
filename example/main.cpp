@@ -20,6 +20,7 @@ seedimg - module based image manipulation library written in modern
 #include <iostream>
 
 #include <seedimg-autodetect.hpp>
+#include <seedimg-formats/seedimg-webp.hpp>
 #include <seedimg-filters/seedimg-filters-core.hpp>
 #include <seedimg-filters/seedimg-filterchain.hpp>
 
@@ -30,10 +31,10 @@ int main() {
             << std::endl;
   {
     //ocl::init_ocl_singleton(1, 0);
-    auto a = seedimg::load("cat.png");
-    // auto res_img = seedimg::make(a->width(), a->height());
-    if (a != nullptr) {
-      // crop_i(a, {0, 0}, {100, 100});
+//    auto a = seedimg::load("cat.png");
+//    auto res_img = seedimg::make(a->width(), a->height());
+//    if (a != nullptr) {
+      // crop_i(a, {122, 166}, {244, 332});
       // grayscale_i(a, true);
       // invert_i(a);
       // blur_i(a, 10);
@@ -57,17 +58,27 @@ int main() {
 //          >> inversion_filter()  // [inverted]
 //          >> a;
 
-      lazy_filterchain()
-          .push_end(seedimg::filters::h_mirror)
-          .push_end(seedimg::filters::rotate_hue, 180)
-          .push_end(seedimg::filters::invert)
-          .push_end(seedimg::filters::brightness, 40)
-          .evaluate(a);
+//      lazy_filterchain()
+//          .push_end(seedimg::filters::h_mirror)
+//          .push_end(seedimg::filters::rotate_hue, 180)
+//          .push_end(seedimg::filters::invert)
+//          .push_end(seedimg::filters::brightness, 40)
+//          .evaluate(a);
 
-      seedimg::save("biol.jpg", a);
-    } else {
-      std::cerr << "failed" << std::endl;
-    }
+
+//      seedimg::save("biol.jpg", a);
+//    } else {
+//      std::cerr << "failed" << std::endl;
+//    }
+
+    auto w = seedimg::modules::webp::from_anim("animation.webp");
+
+    std::cout << "number of frames: " << w.data.size() << '\n';
+    std::cout << "frames per second: " << w.framerate << '\n';
+
+    for(std::size_t i = 0; i < w.data.size(); ++i)
+      seedimg::save("animframe_" + std::to_string(i) + ".webp", w[i]);
+
     std::cerr << "done" << std::endl;
   }
 }

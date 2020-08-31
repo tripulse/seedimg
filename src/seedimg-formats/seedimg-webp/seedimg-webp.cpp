@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
     seedimg - module based image manipulation library written in modern
                 C++ Copyright(C) 2020 telugu-boy
 
@@ -26,6 +26,8 @@
 extern "C" {
 #include <webp/decode.h>
 #include <webp/encode.h>
+#include <webp/demux.h>
+#include <webp/mux.h>
 }
 
 #include <seedimg-formats/seedimg-webp.hpp>
@@ -89,6 +91,100 @@ simg from(const std::string &filename) {
       static_cast<simg_int>(width), static_cast<simg_int>(height),
       reinterpret_cast<seedimg::pixel *>(
           WebPDecodeRGBA(data.get(), size, &width, &height)));
+}
+
+anim from_anim(const std::string& filename) {
+  anim          images;
+  std::ifstream in(filename);
+
+  struct {
+    WebPData data;
+    size_t image_size;
+
+    struct {
+      WebPAnimDecoder* h;
+      WebPAnimInfo     info;
+    } anim;
+
+    struct {
+      int start;
+      int end;
+    } timestamp;
+  } webp;
+
+  // copy-in the contents from the iterator.
+  std::string buf(std::istreambuf_iterator<char>{in},
+                  std::istreambuf_iterator<char>());
+
+  webp.data.bytes = reinterpret_cast<const uint8_t*>(buf.data());
+  webp.data.size = buf.size();
+
+  webp.anim.h = WebPAnimDecoderNew(&webp.data, NULL);
+  WebPAnimDecoderGetInfo(webp.anim.h, &webp.anim.info);
+
+  webp.image_size = webp.anim.info.canvas_width * 4 *
+                    webp.anim.info.canvas_height;
+
+  // to avoid code-duplication.
+  auto WebPPushFrame = [&]() -> int {
+    uint8_t* buf;
+    int      ts;
+
+    if(!WebPAnimDecoderGetNext(webp.anim.h, &buf, &ts))
+      return -1;
+
+    auto img = seedimg::make(webp.anim.info.canvas_width,
+                             webp.anim.info.canvas_height);
+
+    std::memcpy(img->data(), buf, webp.image_size);
+    images.add(img);
+
+    return ts;
+  };
+
+  webp.timestamp.start = WebPPushFrame();
+  webp.timestamp.end = WebPPushFrame();
+
+  // if one of those
+  images.framerate = webp.timestamp.start == -1 || webp.timestamp.end == -1 ? 0
+                      : 1000 / (webp.timestamp.end - webp.timestamp.start);
+
+  // collect all frames until unavailable.
+  while(WebPAnimDecoderHasMoreFrames(webp.anim.h))
+    if(WebPPushFrame() == -1)
+      break;
+
+  WebPAnimDecoderDelete(webp.anim.h);
+  return images;
+}
+
+bool to_anim(const std::string& filename, anim images, bool loop=false) {
+  std::ifstream in(filename);
+
+//  if(images)
+
+  struct {
+    WebPData data;
+    size_t image_size;
+
+    struct {
+      WebPAnimEncoder*       h;
+      WebPAnimEncoderOptions info;
+    } anim;
+
+    struct {
+      int counter = 0;
+      int step;
+    } timestamp;
+  } webp;
+
+  webp.anim.info.allow_mixed            = true;
+  webp.anim.info.minimize_size          = true;
+  webp.anim.info.anim_params.loop_count = !loop;
+
+  webp.timestamp.step = 1000/images.framerate;
+
+//  WebPAnimEncoderNew(images.width(), )
 }
 } // namespace webp
 } // namespace seedimg::modules
