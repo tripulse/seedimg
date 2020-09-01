@@ -71,13 +71,15 @@ int main() {
 //      std::cerr << "failed" << std::endl;
 //    }
 
-    auto w = seedimg::modules::webp::from_anim("animation.webp");
+    auto w = seedimg::modules::webp::from("uhimeshun.webp");
 
-    std::cout << "number of frames: " << w.data.size() << '\n';
-    std::cout << "frames per second: " << w.framerate << '\n';
+    w.trim(0, 1);  // have only 1 frame.
 
-    for(std::size_t i = 0; i < w.data.size(); ++i)
-      seedimg::save("animframe_" + std::to_string(i) + ".webp", w[i]);
+    std::cout << "Frames: " << w.num_frames() << '\n';
+    std::cout << "FPS: " << w.framerate << '\n';
+
+    if(!seedimg::modules::webp::to("um.webp", w))
+      std::cout << "copy operation failed" << '\n';
 
     std::cerr << "done" << std::endl;
   }
