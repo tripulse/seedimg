@@ -131,6 +131,7 @@ public:
   auto begin() const noexcept { return data.begin(); }
   auto end() const noexcept { return data.end(); }
 
+  std::size_t num_frames() { return data.size(); }
 private:
   std::vector<simg> data;
 };
