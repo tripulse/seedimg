@@ -1,6 +1,6 @@
 ﻿/**********************************************************************
     seedimg - module based image manipulation library written in modern
-                C++ Copyright(C) 2020 telugu-boy
+                C++ Copyright(C) 2020 telugu-boy, tripulse
 
     This program is free software : you can redistribute it and /
     or modify it under the terms of the GNU Lesser General Public License as
@@ -24,18 +24,17 @@
 #include <fstream>
 
 extern "C" {
-#include <webp/decode.h>
-#include <webp/encode.h>
 #include <webp/demux.h>
+#include <webp/decode.h>
+
 #include <webp/mux.h>
+#include <webp/encode.h>
 }
 
 #include <seedimg-formats/seedimg-webp.hpp>
 
 namespace seedimg::modules {
 namespace webp {
-
-// TODO: This is an example of a library function
 bool check(const std::string &filename) noexcept {
   std::error_code ec;
   std::size_t size = std::filesystem::file_size(filename, ec);
@@ -52,48 +51,7 @@ bool check(const std::string &filename) noexcept {
   return !std::memcmp(cmp, header, 8);
 }
 
-bool to(const std::string &filename, const simg &inp_img, float quality) {
-  std::uint8_t *output = nullptr;
-  // this is the amount of bytes output has been allocated, 0 if failure
-  // '''''-'''''
-  std::size_t success = WebPEncodeRGBA(
-      reinterpret_cast<std::uint8_t *>(inp_img->data()),
-      static_cast<int>(inp_img->width()), static_cast<int>(inp_img->height()),
-      static_cast<int>(inp_img->width() *
-                       static_cast<simg_int>(sizeof(seedimg::pixel))),
-      quality, &output);
-  if (success == 0)
-    return false;
-  std::ofstream file(filename, std::ios::binary);
-  file.write(reinterpret_cast<char *>(output),
-             static_cast<std::streamsize>(success));
-  WebPFree(output);
-  return true;
-}
-simg from(const std::string &filename) {
-  std::error_code ec;
-  size_t size = std::filesystem::file_size(filename, ec);
-  if (ec != std::error_code{})
-    return nullptr;
-  int width, height;
-  auto data = std::make_shared<uint8_t[]>(size);
-
-  // read into data
-  std::ifstream file(filename, std::ios::binary);
-  if (!file.read(reinterpret_cast<char *>(data.get()), static_cast<long>(size)))
-    return nullptr;
-
-  int success = WebPGetInfo(data.get(), size, &width, &height);
-  if (!success)
-    return nullptr;
-
-  return std::make_shared<seedimg::img>(
-      static_cast<simg_int>(width), static_cast<simg_int>(height),
-      reinterpret_cast<seedimg::pixel *>(
-          WebPDecodeRGBA(data.get(), size, &width, &height)));
-}
-
-anim from_anim(const std::string& filename) {
+anim from(const std::string& filename) {
   anim          images;
   std::ifstream in(filename);
 
@@ -109,7 +67,7 @@ anim from_anim(const std::string& filename) {
     struct {
       int start;
       int end;
-    } timestamp;
+    } ts;
   } webp;
 
   // copy-in the contents from the iterator.
@@ -122,10 +80,9 @@ anim from_anim(const std::string& filename) {
   webp.anim.h = WebPAnimDecoderNew(&webp.data, NULL);
   WebPAnimDecoderGetInfo(webp.anim.h, &webp.anim.info);
 
-  webp.image_size = webp.anim.info.canvas_width * 4 *
-                    webp.anim.info.canvas_height;
+  // amount of data to memcpy into seedimg::img buffer.
+  webp.image_size = webp.anim.info.canvas_width * 4 * webp.anim.info.canvas_height;
 
-  // to avoid code-duplication.
   auto WebPPushFrame = [&]() -> int {
     uint8_t* buf;
     int      ts;
@@ -142,12 +99,13 @@ anim from_anim(const std::string& filename) {
     return ts;
   };
 
-  webp.timestamp.start = WebPPushFrame();
-  webp.timestamp.end = WebPPushFrame();
+  webp.ts.start = WebPPushFrame();
+  webp.ts.end = WebPPushFrame();
 
-  // if one of those
-  images.framerate = webp.timestamp.start == -1 || webp.timestamp.end == -1 ? 0
-                      : 1000 / (webp.timestamp.end - webp.timestamp.start);
+  // if atleast two consecutive frames were found; calculate the delta,
+  // considering it a time step-factor calculate the framerate.
+  images.framerate = webp.ts.start == -1 || webp.ts.end == -1 ? 0
+                      : 1000 / (webp.ts.end - webp.ts.start);
 
   // collect all frames until unavailable.
   while(WebPAnimDecoderHasMoreFrames(webp.anim.h))
@@ -158,33 +116,96 @@ anim from_anim(const std::string& filename) {
   return images;
 }
 
-bool to_anim(const std::string& filename, anim images, bool loop=false) {
-  std::ifstream in(filename);
+bool to(const std::string& filename, anim& images,
+        std::pair<std::uint8_t, std::uint8_t> quality,
+        bool lossless, bool loop) {
+  std::ofstream out(filename);
 
-//  if(images)
+  if(!images.num_frames())
+    return true;
+
+  // since the effect is same and many decoders don't support
+  // ANIM and ANMF chunks, they count it as invalid file.
+  else if(images.num_frames() == 1) {
+    auto img = images[0];
+    std::uint8_t* out;
+
+    if(lossless)
+      WebPEncodeRGBA(reinterpret_cast<std::uint8_t*>(img->data()),
+                     img->width(), img->height(),
+                     img->width() * sizeof(seedimg::pixel),
+                     quality.first, &out);
+    else
+      WebPEncodeLosslessRGBA(reinterpret_cast<std::uint8_t*>(img->data()),
+                             img->width(), img->height(),
+                             img->width() * sizeof(seedimg::pixel), &out);
+  }
 
   struct {
     WebPData data;
-    size_t image_size;
+    WebPConfig cfg;
+    WebPPicture pic;
 
     struct {
       WebPAnimEncoder*       h;
-      WebPAnimEncoderOptions info;
+      WebPAnimEncoderOptions opts;
     } anim;
 
     struct {
       int counter = 0;
       int step;
-    } timestamp;
+    } ts;
   } webp;
 
-  webp.anim.info.allow_mixed            = true;
-  webp.anim.info.minimize_size          = true;
-  webp.anim.info.anim_params.loop_count = !loop;
+  if(!WebPAnimEncoderOptionsInit(&webp.anim.opts) ||
+     !WebPConfigInit(&webp.cfg) ||
+     !WebPPictureInit(&webp.pic))
+    return false;
 
-  webp.timestamp.step = 1000/images.framerate;
+  webp.cfg.lossless      = lossless;
+  webp.cfg.quality       = quality.first;
+  webp.cfg.alpha_quality = quality.second;
 
-//  WebPAnimEncoderNew(images.width(), )
+  webp.pic.width = images[0]->width();
+  webp.pic.height = images[0]->height();
+
+  if(!WebPPictureAlloc(&webp.pic))
+    return false;
+
+  webp.anim.opts.anim_params.loop_count = !loop;
+  webp.ts.step = 1000/images.framerate;
+
+  webp.anim.h = WebPAnimEncoderNew(
+        images[0]->width(), images[0]->height(), &webp.anim.opts);
+
+  for(const auto& frame : images) {
+    // only rescale picture-buffer if needed.
+    if(frame->width() != static_cast<simg_int>(webp.pic.width) ||
+       frame->height() != static_cast<simg_int>(webp.pic.height))
+      WebPPictureRescale(&webp.pic, frame->width(), frame->height());
+    WebPPictureImportRGBA(&webp.pic,
+                          reinterpret_cast<std::uint8_t*>(frame->data()),
+                          frame->width() * sizeof(seedimg::pixel));
+
+    if(!WebPAnimEncoderAdd(webp.anim.h, &webp.pic, webp.ts.counter, &webp.cfg))
+      break;
+    webp.ts.counter+= webp.ts.step;
+  }
+
+  WebPPictureFree(&webp.pic);
+  if(!WebPAnimEncoderAssemble(webp.anim.h, &webp.data))
+    return false;
+  WebPAnimEncoderDelete(webp.anim.h);
+
+  try {
+    out.write(reinterpret_cast<char*>(
+                const_cast<std::uint8_t*>(webp.data.bytes)),
+              webp.data.size);
+
+    free(const_cast<std::uint8_t*>(webp.data.bytes));
+  } catch (std::iostream::failure)
+  { return false; }
+  return true;
 }
 } // namespace webp
 } // namespace seedimg::modules
