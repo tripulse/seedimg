@@ -2,32 +2,11 @@
 #define _SEEDIMG_FILTERCHAIN
 
 #include <seedimg.hpp>
+#include <functional>
 #include <list>
 
 
 namespace seedimg::filters {
-//class lazy_filterchain;
-
-//class filter {
-//public:
-//  virtual void operator()(const simg& input, simg& output) = 0;
-
-//  std::reference_wrapper<filter> operator>>(simg& input) {
-//    (*this)(input, input);
-//    return *this;
-//  }
-
-//  lazy_filterchain operator>>(filter&& f);
-
-//  //// this can enable eager evaluation of filters:
-//  //  simg operator+(const simg& input) {
-//  //    auto output = seedimg::make(input->width(),
-//  //                                input->height());
-//  //    (*this)(input, output);
-//  //    return output;
-//  //  }
-//};
-
 /** 
  * A linear chain of multiple filters which is lazily evaluated. For it being
  * lazily evaluated it can be re-used. The order of evaluating filters can be
