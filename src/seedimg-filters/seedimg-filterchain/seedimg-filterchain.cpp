@@ -1,18 +1,6 @@
 ﻿#include <seedimg-filters/seedimg-filterchain.hpp>
-#include <seedimg-filters/seedimg-filterchain-ports.hpp>
 
 namespace seedimg::filters {
-//lazy_filterchain filter::operator>>(filter&& f) {
-//    return lazy_filterchain()
-//        >> std::move(*this)
-//        >> std::move(f);
-//}
-
-//lazy_filterchain lazy_filterchain::operator>>(filter&& f) {
-//  filters.push_back(f);
-//  return *this;
-//}
-
 lazy_filterchain& lazy_filterchain::evaluate(const simg& input, simg& output) {
   output = input;
 
