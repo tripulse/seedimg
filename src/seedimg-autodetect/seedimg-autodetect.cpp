@@ -62,8 +62,8 @@ std::optional<enum img_type> imgtype(const std::string &filename) noexcept {
     return img_type::gif;
   if (seedimg::modules::tiff::check(filename))
     return img_type::tiff;
-  if (seedimg::modules::gif::check(filename))
-    return img_type::gif;
+//  if (seedimg::modules::gif::check(filename))
+//    return img_type::gif;
   return img_type::unknown;
 }
 
@@ -78,7 +78,7 @@ simg load(const std::string &filename) {
   case img_type::jpeg:
     return seedimg::modules::jpeg::from(filename);
   case img_type::webp:
-    return seedimg::modules::webp::from(filename);
+    return seedimg::modules::webp::from(filename)[0];
   case img_type::farbfeld:
     return seedimg::modules::farbfeld::from(filename);
   case img_type::gif:
@@ -103,8 +103,10 @@ bool save(const std::string &filename, const simg &image) {
     return seedimg::modules::png::to(filename, image);
   case img_type::jpeg:
     return seedimg::modules::jpeg::to(filename, image);
-  case img_type::webp:
-    return seedimg::modules::webp::to(filename, image);
+  case img_type::webp: {
+    auto _img = anim(image);
+    return seedimg::modules::webp::to(filename, _img);
+  }
   case img_type::farbfeld:
     return seedimg::modules::farbfeld::to(filename, image);
   case img_type::tiff:
