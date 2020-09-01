@@ -33,7 +33,7 @@ int main() {
     auto a = seedimg::load("cat.png");
     // auto res_img = seedimg::make(a->width(), a->height());
     if (a != nullptr) {
-      crop_i(a, {2, 2}, {500, 366});
+      crop_i(a, {0, 0}, {100, 100});
       // grayscale_i(a, true);
       // invert_i(a);
       // blur_i(a, 10);
@@ -44,7 +44,7 @@ int main() {
       // v_mirror_i(a);
       // h_mirror_i(a);
       // ocl::rotate_hue_i(a, -90);
-      seedimg::save("biol.jpg", a);
+      seedimg::save("biol.png", a);
       // bool b = seedimg::modules::jpeg::to("biol.jpg", a, 1);
 //      inversion_filter()         // [inverted]
 //          >> inversion_filter()  // [original]
