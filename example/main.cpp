@@ -1,4 +1,4 @@
-﻿/**********************************************************************
+/**********************************************************************
 seedimg - module based image manipulation library written in modern
             C++ Copyright(C) 2020 telugu-boy
 
@@ -31,9 +31,9 @@ int main() {
             << std::endl;
   {
     //ocl::init_ocl_singleton(1, 0);
-//    auto a = seedimg::load("cat.png");
+    auto a = seedimg::load("cat.png");
 //    auto res_img = seedimg::make(a->width(), a->height());
-//    if (a != nullptr) {
+    if (a != nullptr) {
       // crop_i(a, {122, 166}, {244, 332});
       // grayscale_i(a, true);
       // invert_i(a);
@@ -58,29 +58,29 @@ int main() {
 //          >> inversion_filter()  // [inverted]
 //          >> a;
 
-//      lazy_filterchain()
-//          .push_end(seedimg::filters::h_mirror)
-//          .push_end(seedimg::filters::rotate_hue, 180)
-//          .push_end(seedimg::filters::invert)
-//          .push_end(seedimg::filters::brightness, 40)
-//          .evaluate(a);
+      auto b = std::make_shared<seedimg::img>(*a);
+      grayscale_i(b);
 
+      filterchain()
+          .add<true>(h_mirror_i)  // inplace fuction.
+          .add(blend, b, std::make_pair(70, 30))
+          .eval(a);
 
-//      seedimg::save("biol.jpg", a);
-//    } else {
-//      std::cerr << "failed" << std::endl;
-//    }
+      seedimg::save("biol.jpg", a);
+    } else {
+      std::cerr << "failed" << std::endl;
+    }
 
-    auto w = seedimg::modules::webp::from("uhimeshun.webp");
-
-    w.trim(0, 1);  // have only 1 frame.
-
-    std::cout << "Frames: " << w.num_frames() << '\n';
-    std::cout << "FPS: " << w.framerate << '\n';
-
-    if(!seedimg::modules::webp::to("um.webp", w))
-      std::cout << "copy operation failed" << '\n';
-
-    std::cerr << "done" << std::endl;
+//    auto w = seedimg::modules::webp::from("uhimeshun.webp");
+//
+//    w.trim(0, 1);  // have only 1 frame.
+//
+//    std::cout << "Frames: " << w.num_frames() << '\n';
+//    std::cout << "FPS: " << w.framerate << '\n';
+//
+//    if(!seedimg::modules::webp::to("um.webp", w))
+//      std::cout << "copy operation failed" << '\n';
+//
+//    std::cerr << "done" << std::endl;
   }
 }
