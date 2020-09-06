@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
     seedimg - module based image manipulation library written in modern
                 C++ Copyright(C) 2020 telugu-boy
 
@@ -25,7 +25,9 @@
 namespace seedimg::modules {
 namespace tiff {
 bool check(const std::string &filename) noexcept;
-bool to(const std::string &filename, const std::vector<seedimg::img> &inp_img);
-std::vector<seedimg::img> from(const std::string &filename,
-                               std::size_t max_frames = 1);
+bool to(const std::string &filename, const anim& inp_img);
+anim from(const std::string &filename,
+          std::size_t max_frames = 1);
+}
+}
 #endif

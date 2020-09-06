@@ -39,3 +39,7 @@ endif()
 if(GIF_ENABLED)
   add_subdirectory(seedimg-gif)
 endif()
+
+if(TIFF_ENABLED)
+  add_subdirectory(seedimg-tiff)
+endif()

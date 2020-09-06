@@ -62,8 +62,6 @@ std::optional<enum img_type> imgtype(const std::string &filename) noexcept {
     return img_type::gif;
   if (seedimg::modules::tiff::check(filename))
     return img_type::tiff;
-//  if (seedimg::modules::gif::check(filename))
-//    return img_type::gif;
   return img_type::unknown;
 }
 
@@ -86,11 +84,8 @@ simg load(const std::string &filename) {
   case img_type::tiff: {
     // this will return the first one only. use the full function to get the
     // entire vector.
-    return std::make_unique<seedimg::img>(
-        seedimg::modules::tiff::from(filename, 1)[0]);
+    return seedimg::modules::tiff::from(filename, 1)[0];
   }
-  case img_type::gif:
-    return seedimg::modules::gif::from(filename);
   default:
     return nullptr;
   }
@@ -110,7 +105,7 @@ bool save(const std::string &filename, const simg &image) {
   case img_type::farbfeld:
     return seedimg::modules::farbfeld::to(filename, image);
   case img_type::tiff:
-    return seedimg::modules::tiff::to(filename, image);
+    return seedimg::modules::tiff::to(filename, {image});
   case img_type::irdump:
     return seedimg::modules::irdump::to(filename, image);
   case img_type::gif:

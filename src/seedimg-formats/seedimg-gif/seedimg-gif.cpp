@@ -22,6 +22,7 @@
 
 // #include <gifski.h>
 #include <gif_lib.h>
+#include <cstring>
 
 namespace seedimg::modules::gif {
 bool check(const std::string& filename) {
