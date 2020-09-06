@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 seedimg - module based image manipulation library written in modern C++
 Copyright (C) 2020 tripulse
 
@@ -26,7 +26,8 @@ Copyright (C) 2020 tripulse
 #include <seedimg.hpp>
 
 void seedimg::filters::convolution(simg &input,
-                                   std::vector<std::vector<float>> kernel) {
+                                   std::vector<std::vector<float>> kernel,
+                                   bool normalise) {
   seedimg::point kernel_dims{kernel.size() ? kernel[0].size() : 0,
                              kernel.size()};
   // NOTE: only square aka. NxN kernels are allowed as they're symmetric and
@@ -34,7 +35,7 @@ void seedimg::filters::convolution(simg &input,
   if (kernel_dims.first != kernel_dims.second || kernel_dims.first == 0)
     return;
 
-  {
+  if(normalise) {
     // will be used as the divisor to normalize all the kernel elements.
     auto kernmatrix_normdiv = std::abs(std::accumulate(
         kernel.begin(), kernel.end(), 0.0, [](float s, auto r) -> float {
@@ -77,7 +78,6 @@ void seedimg::filters::convolution(simg &input,
                       static_cast<long long>(kernel_origin.second))) %
                   input->height()));
 
-          // TODO: alpha isn't altered, need to add an option for it.
           outpix.r += static_cast<float>(pix.r) * kernel[dy][dx];
           outpix.g += static_cast<float>(pix.g) * kernel[dy][dx];
           outpix.b += static_cast<float>(pix.b) * kernel[dy][dx];

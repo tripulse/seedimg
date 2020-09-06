@@ -58,7 +58,7 @@ void v_blur_i(simg &inp_img, unsigned int blur_level, std::uint8_t it = 3);
  * NOTE: if weren't a square kernel, the image stays intact.
  * NOTE: alpha is passed-as it is, it's not convoluted.
  */
-void convolution(simg &input, std::vector<std::vector<float>> kernel);
+void convolution(simg &input, std::vector<std::vector<float>> kernel, bool normalise = true);
 
 void brightness(simg &input, simg &output, std::uint8_t intensity);
 void brightness_i(simg &image, std::uint8_t intensity);
