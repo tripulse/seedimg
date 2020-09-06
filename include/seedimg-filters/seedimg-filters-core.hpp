@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
     seedimg - module based image manipulation library written in modern C++
     Copyright (C) 2020 telugu-boy, tripulse
 
@@ -65,10 +65,10 @@ void brightness_i(simg &image, std::uint8_t intensity);
 void brightness_a(simg &input, simg &output, std::uint8_t intensity);
 void brightness_a_i(simg &image, std::uint8_t intensity);
 
-void blend(std::pair<simg &, const std::uint8_t> input,
-           std::pair<simg &, const std::uint8_t> other, simg &output);
-void blend_i(std::pair<simg &, const std::uint8_t> input,
-             std::pair<simg &, const std::uint8_t> other);
+void blend(simg& input, simg& output, simg& other,
+           std::pair<std::uint8_t, std::uint8_t> mix);
+void blend_i(simg& input, simg& output, simg& other,
+             std::pair<std::uint8_t, std::uint8_t> mix);
 namespace ocl {}
 } // namespace seedimg::filters
 
