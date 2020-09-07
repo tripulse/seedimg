@@ -67,7 +67,7 @@ void brightness_a_i(simg &image, std::uint8_t intensity);
 
 void blend(simg& input, simg& output, simg& other,
            std::pair<std::uint8_t, std::uint8_t> mix);
-void blend_i(simg& input, simg& output, simg& other,
+void blend_i(simg& input, simg& other,
              std::pair<std::uint8_t, std::uint8_t> mix);
 namespace ocl {}
 } // namespace seedimg::filters
