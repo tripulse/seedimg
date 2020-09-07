@@ -4,12 +4,6 @@
 #include <seedimg.hpp>
 
 namespace seedimg::modules {
-/**
- * Graphics interchange format (GIF) is a format made in 80s for
- * storing image in a compressed form as an alternative to BMP.
- * Its color range is limited to 256 colors, but the underlying
- * library is good enough at the quantization process.
- */
 namespace gif {
 /**
  * @brief Checks if a given file is a valid GIF 87/89 file.
