@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
     seedimg - module based image manipulation library written in modern
                 C++ Copyright(C) 2020 tripulse
 
@@ -83,6 +83,24 @@ public:
 
   filterchain& eval(simg& img) {
     eval(img, img);
+    return *this;
+  }
+
+  /**
+   * @brief Same as for a single image except its done on a
+   * sequence of images within [start..end) frames.
+   * @param imgs images to transform (inplace).
+   * @param start index to start with.
+   * @param end index to end with.
+   */
+  filterchain& eval(anim& imgs, simg_int start=0,
+                                simg_int end=0) {
+    end = end ? end : imgs.num_frames();
+    if(end <= start)  // if nothing to do or invalid range.
+        return *this;
+
+    for(simg_int i = start; i < end; ++i)
+      eval(imgs[i]);
     return *this;
   }
 };
